@@ -79,3 +79,5 @@ npm i axios
 # server environment:
 
 npm i bcryptjs
+npm i jsonwebtoken
+npm i config
