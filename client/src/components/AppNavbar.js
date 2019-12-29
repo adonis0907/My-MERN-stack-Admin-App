@@ -40,9 +40,9 @@ class AppNavbar extends Component {
             <strong>{user ? `Welcome ${user.name}` : ''}</strong>
           </span>
         </NavItem>
-        <NavItem>
+        {/* <NavItem> */}
           <Logout />
-        </NavItem>
+        {/* </NavItem> */}
       </Fragment>
     );
 

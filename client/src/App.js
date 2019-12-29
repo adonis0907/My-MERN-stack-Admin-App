@@ -10,6 +10,11 @@ import { loadUser } from "./actions/authActions";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
+import Dashboard from "./components/dashboard/Dashboard";
+import { Route, BrowserRouter as Router } from "react-router-dom";
+import SignInSide from "./components/auth/SignInSide";
+import SignUp from "./components/auth/SignUp";
+import { createMuiTheme } from "@material-ui/core/styles";
 
 class App extends Component {
   componentDidMount() {
@@ -19,13 +24,26 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div className='App'>
+        
+
+        <Router>
+        {/* <div className='App'>
           <AppNavbar />
           <Container>
             <ItemModal />
             <ShoppingList />
           </Container>
-        </div>
+        </div> */}
+          <Route exact path="/">
+            <Dashboard />
+          </Route>
+          <Route path="/signin">
+            <SignInSide />
+          </Route>
+          <Route path="/signup">
+            <SignUp />
+          </Route>
+        </Router>
       </Provider>
     );
   }
