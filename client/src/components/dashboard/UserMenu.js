@@ -12,7 +12,7 @@ import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
-import { Logout } from "../auth/Logout";
+import Logout from "../auth/Logout";
 const StyledMenu = withStyles({
   paper: {
     border: "1px solid #d3d4d5"

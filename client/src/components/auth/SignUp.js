@@ -68,6 +68,10 @@ class SignUp extends Component {
         this.setState({ msg: null });
       }
     }
+
+    // if (isAuthenticated) {
+    //   this.toggle();
+    // }
   }
 
   toggle = () => {
@@ -92,15 +96,12 @@ class SignUp extends Component {
     };
 
     // Attempt to register
-    this.props.register(newUser);
-    if (this.state.isAuthenticated) this.props.history.push("/dashboard");
+    this.props.register(newUser).then(authPromise => {
+      document.location.href = "/";
+    });
 
     //clear errors.
     this.toggle();
-    // If authenticated, go to dashboard
-    if (this.props.isAuthenticated) {
-      document.location.href = "/";
-    }
   };
   render() {
     const { classes } = this.props;
@@ -116,11 +117,14 @@ class SignUp extends Component {
             Sign up
           </Typography>
           {this.state.msg ? (
-              <ResponsiveDialog alertMsg={this.state.msg} />
-            ) : null}
+            <ResponsiveDialog
+              alertMsg={this.state.msg}
+              title={this.props.error.id}
+            />
+          ) : null}
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12}>
                 <TextField
                   autoComplete="fname"
                   name="name"

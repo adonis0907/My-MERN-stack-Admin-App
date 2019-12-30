@@ -65,7 +65,8 @@ class SignInSide extends Component {
   state = {
     email: "",
     password: "",
-    msg: null
+    msg: null,
+    is2FA: false
   };
 
   static propTypes = {
@@ -84,7 +85,16 @@ class SignInSide extends Component {
       } else {
         this.setState({ msg: null });
       }
+
+      // if (isAuthenticated) {
+      //    document.location.href = "/";
+
+      // }
     }
+
+    // if (isAuthenticated) {
+    //   this.toggle();
+    // }
   }
 
   toggle = () => {
@@ -107,91 +117,112 @@ class SignInSide extends Component {
     };
 
     // Attempt to login
-    this.props.login(user);
+    this.props.login(user).then(authPromise => {
+      document.location.href = "/";
+      // this.setState({
+      //   is2FA: true
+      // });
+    });
 
     //clear errors
     this.toggle();
-
-    // If authenticated, go to dashboard
-    console.log(this.props.isAuthenticated);
-    if (this.props.isAuthenticated) {
-      document.location.href = "/";
-    }
   };
 
   render() {
     const { classes } = this.props;
     return (
-      <Grid container component="main" className={classes.root}>
-        <CssBaseline />
-        <Grid item xs={false} sm={4} md={7} className={classes.image} />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-          <div className={classes.paper}>
-            <Avatar className={classes.avatar}>
-              <LockOutlinedIcon />
-            </Avatar>
-            <Typography component="h1" variant="h5">
-              Sign in
-            </Typography>
-            {this.state.msg ? (
-              <ResponsiveDialog alertMsg={this.state.msg} />
-            ) : null}
-            <form className={classes.form} noValidate>
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                autoFocus
-                onChange={this.onChange}
-              />
-              <TextField
-                variant="outlined"
-                margin="normal"
-                required
-                fullWidth
-                name="password"
-                label="Password"
-                type="password"
-                id="password"
-                autoComplete="current-password"
-                onChange={this.onChange}
-              />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                className={classes.submit}
-                onClick={this.onSubmit}
-              >
-                Sign In
-              </Button>
+      <div>
+        {/* if user credentials are correct. Do a google 2fa before login to dashboard */}
+        {this.state.is2FA ? (
+          <ResponsiveDialog
+            alertMsg="enter the code from google authenticator to log in."
+            title="Google Two-Factor Auth"
+          />
+        ) : null}
 
-              <Grid container>
-                <Grid item xs>
-                  <NavLink to="#" variant="body2">
-                    Forgot password?
-                  </NavLink>
+        <Grid container component="main" className={classes.root}>
+          <CssBaseline />
+
+          <Grid item xs={false} sm={4} md={7} className={classes.image} />
+          <Grid
+            item
+            xs={12}
+            sm={8}
+            md={5}
+            component={Paper}
+            elevation={6}
+            square
+          >
+            <div className={classes.paper}>
+              <Avatar className={classes.avatar}>
+                <LockOutlinedIcon />
+              </Avatar>
+              <Typography component="h1" variant="h5">
+                Sign in
+              </Typography>
+              {this.state.msg ? (
+                <ResponsiveDialog
+                  alertMsg={this.state.msg}
+                  title={this.props.error.id}
+                />
+              ) : null}
+              <form className={classes.form} noValidate>
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  autoFocus
+                  onChange={this.onChange}
+                />
+                <TextField
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type="password"
+                  id="password"
+                  autoComplete="current-password"
+                  onChange={this.onChange}
+                />
+                <FormControlLabel
+                  control={<Checkbox value="remember" color="primary" />}
+                  label="Remember me"
+                />
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  className={classes.submit}
+                  onClick={this.onSubmit}
+                >
+                  Sign In
+                </Button>
+
+                <Grid container>
+                  <Grid item xs>
+                    <NavLink to="#" variant="body2">
+                      Forgot password?
+                    </NavLink>
+                  </Grid>
+                  <Grid item>
+                    <NavLink to="./signup" variant="body2">
+                      {"Don't have an account? Sign Up"}
+                    </NavLink>
+                  </Grid>
                 </Grid>
-                <Grid item>
-                  <NavLink to="./signup" variant="body2">
-                    {"Don't have an account? Sign Up"}
-                  </NavLink>
-                </Grid>
-              </Grid>
-            </form>
-          </div>
+              </form>
+            </div>
+          </Grid>
         </Grid>
-      </Grid>
+      </div>
     );
   }
 }

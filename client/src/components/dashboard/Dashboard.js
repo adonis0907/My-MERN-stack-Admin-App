@@ -21,17 +21,21 @@ import Paper from "@material-ui/core/Paper";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import NotificationsIcon from "@material-ui/icons/Notifications";
-import { mainListItems, secondaryListItems } from "./listItems";
+import SelectedListItem, {
+  mainListItems,
+  secondaryListItems
+} from "./listItems";
 import Chart from "./Chart";
 import Deposits from "./Deposits";
 import Orders from "./Orders";
 import { Route, BrowserRouter as Router, NavLink } from "react-router-dom";
-import { Logout } from "../auth/Logout";
+import Logout from "../auth/Logout";
 import UserMenu from "./UserMenu";
 
 //redux
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import ResponsiveDialog from "../ResponsiveDialog";
 
 const drawerWidth = 240;
 const theme = createMuiTheme({
@@ -90,9 +94,9 @@ const styles = {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
-    width: theme.spacing(7),
+    width: theme.spacing(15),
     [theme.breakpoints.up("sm")]: {
-      width: theme.spacing(9)
+      width: theme.spacing(15)
     }
   },
   appBarSpacer: theme.mixins.toolbar,
@@ -118,107 +122,116 @@ const styles = {
 
 class Dashboard extends Component {
   state = {
-    open: false
+    open: false,
+    selectedIndex: 0
   };
   static propTypes = {
     auth: PropTypes.object.isRequired
   };
-  
+
   render() {
     const { classes } = this.props;
-    const  fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
     const { open } = this.state;
     const handleDrawerOpen = () => {
       this.setState({
         open: true
-      });  };
+      });
+    };
     const handleDrawerClose = () => {
       this.setState({
         open: false
       });
     };
+
+    const DashboardAppBar = (
+      <AppBar
+        position="absolute"
+        className={clsx(classes.appBar, open && classes.appBarShift)}
+      >
+        <Toolbar className={classes.toolbar}>
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={handleDrawerOpen}
+            className={clsx(
+              classes.menuButton,
+              open && classes.menuButtonHidden
+            )}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            className={classes.title}
+          >
+            Dashboard
+          </Typography>
+          <IconButton color="inherit">
+            <Badge badgeContent={4} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+          <UserMenu />
+        </Toolbar>
+      </AppBar>
+    );
+    const cb = (selectedIndex) => {
+      this.setState({
+        selectedIndex: selectedIndex
+      });
+    }
+    const DashboardDrawer = (
+      <Drawer
+        variant="permanent"
+        classes={{
+          paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
+        }}
+        open={open}
+      >
+        <div className={classes.toolbarIcon}>
+          <IconButton>
+            <NavLink to="/profile">
+              <Avatar></Avatar>
+            </NavLink>
+          </IconButton>
+          <IconButton onClick={handleDrawerClose}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </div>
+        <SelectedListItem callback={cb}/>
+      </Drawer>
+    );
     return (
-      
       <div className={classes.root}>
         <CssBaseline />
-        <AppBar
-          position="absolute"
-          className={clsx(classes.appBar, open && classes.appBarShift)}
-        >
-          <Toolbar className={classes.toolbar}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={handleDrawerOpen}
-              className={clsx(
-                classes.menuButton,
-                open && classes.menuButtonHidden
-              )}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              className={classes.title}
-            >
-              Dashboard
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <UserMenu />
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          variant="permanent"
-          classes={{
-            paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose)
-          }}
-          open={open}
-        >
-          <div className={classes.toolbarIcon}>
-            <IconButton>
-              <NavLink to="/profile">
-                <Avatar></Avatar>
-              </NavLink>
-            </IconButton>
-            <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </div>
-          <Divider />
-          <List>{mainListItems}</List>
-          <Divider />
-          <List>{secondaryListItems}</List>
-        </Drawer>
+        {DashboardAppBar}
+        {DashboardDrawer}
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
             <Grid container spacing={3}>
               {/* Chart */}
-              <Grid item xs={12} md={8} lg={9}>
+              {/* <Grid item xs={12} md={8} lg={9}>
                 <Paper className={fixedHeightPaper}>
                   <Chart />
                 </Paper>
-              </Grid>
+              </Grid> */}
               {/* Recent Deposits */}
-              <Grid item xs={12} md={4} lg={3}>
+              {/* <Grid item xs={12} md={4} lg={3}>
                 <Paper className={fixedHeightPaper}>
                   <Deposits />
                 </Paper>
-              </Grid>
+              </Grid> */}
               {/* Recent Orders */}
-              <Grid item xs={12}>
+              {/* <Grid item xs={12}>
                 <Paper className={classes.paper}>
                   <Orders />
                 </Paper>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Container>
         </main>
