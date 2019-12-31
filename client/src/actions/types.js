@@ -20,5 +20,7 @@ export const GET_ERRORS = 'GET_ERRORS';
 export const CLEAR_ERRORS = 'CLEAR_ERRORS';
 
 //GOOGLE 2FA
-export const TWOFA_SUCCESS = 'TWOFA_SUCCESS';
-export const TWOFA_FAIL = 'TWOFA_FAIL';
+export const TFA_SUCCESS = 'TFA_SUCCESS';
+export const TFA_SETUP_SUCCESS = 'TFA_SETUP_SUCCESS';
+
+export const TFA_FAIL = 'TFA_FAIL';

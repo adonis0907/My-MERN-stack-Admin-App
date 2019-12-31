@@ -11,8 +11,9 @@ import {
   LOGOUT_SUCCESS,
   REGISTER_SUCCESS,
   REGISTER_FAIL,
-  TWOFA_SUCCESS,
-  TWOFA_FAIL
+  TFA_SUCCESS,
+  TFA_FAIL,
+  TFA_SETUP_SUCCESS
 } from "./types";
 
 // Check token & load user
@@ -62,7 +63,7 @@ export const register = ({ name, email, password }) => dispatch => {
     });
   });
 
-    //not sure if it is the right way to do redux.
+  //not sure if it is the right way to do redux.
   return authPromise;
 };
 
@@ -125,9 +126,8 @@ export const tokenConfig = getState => {
   return config;
 };
 
-
-// google 2fa auth.
-export const twoFAVerify =  code  => dispatch => {
+// google 2fa auth setup.
+export const getTFA = email => dispatch => {
   // Headers
   const config = {
     headers: {
@@ -135,24 +135,78 @@ export const twoFAVerify =  code  => dispatch => {
     }
   };
 
-  
   // Request body
-  const body = JSON.stringify( code );
-  const authPromise = axios.post("/api/tfa/verify", body, config).then(res =>
+  const body = JSON.stringify(email);
+  const authPromise = axios.get("/api/TFA/setup", body, config).then(res =>
     dispatch({
-      type: TWOFA_SUCCESS,
+      type: TFA_SETUP_SUCCESS,
       payload: res.data
     })
   );
   authPromise.catch(err => {
-    dispatch(
-      returnErrors(err.response.data, err.response.status, "TWOFA_FAIL")
-    );
+    dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
     dispatch({
-      type: TWOFA_FAIL
+      type: TFA_FAIL
     });
   });
 
-    //not sure if it is the right way to do redux.
+  //not sure if it is the right way to do redux.
   return authPromise;
 };
+
+// google 2fa auth setup.
+export const TFASetup = ( email, domainName ) => dispatch => {
+  // Headers
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  // Request body
+  const body = JSON.stringify(email, domainName);
+  const authPromise = axios.post("/api/TFA/setup", body, config).then(res =>
+    dispatch({
+      type: TFA_SETUP_SUCCESS,
+      payload: res.data
+    })
+  );
+  authPromise.catch(err => {
+    dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
+    dispatch({
+      type: TFA_FAIL
+    });
+  });
+
+  //not sure if it is the right way to do redux.
+  return authPromise;
+};
+
+// google 2fa auth verify.
+export const TFAVerify = (token, code) => dispatch => {
+  // Headers
+  const config = {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  };
+
+  // Request body
+  const body = JSON.stringify(token, code);
+  const authPromise = axios.post("/api/TFA/verify", body, config).then(res =>
+    dispatch({
+      type: TFA_SUCCESS
+    })
+  );
+  authPromise.catch(err => {
+    dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
+    dispatch({
+      type: TFA_FAIL
+    });
+  });
+
+  //not sure if it is the right way to do redux.
+  return authPromise;
+};
+
+

@@ -12,7 +12,10 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 
 //redux
-import { twoFAVerify } from "../actions/authActions";
+import { TFAVerify } from "../actions/authActions";
+import { TFASetup } from "../actions/authActions";
+import { getTFA } from "../actions/authActions";
+
 import { clearErrors } from "../actions/errorActions";
 
 import MediaQuery from "react-responsive";
@@ -26,16 +29,22 @@ class ResponsiveDialog extends Component {
   state = {
     open: true,
     QRCode: "",
-    code: ""
+    code: "",
+    hasSetupTFA: false
   };
 
   static propTypes = {
     isAuthenticated: PropTypes.bool,
     error: PropTypes.object.isRequired,
-    twoFAVerify: PropTypes.func.isRequired,
-    clearErrors: PropTypes.func.isRequired
+    TFAVerify: PropTypes.func.isRequired,
+    clearErrors: PropTypes.func.isRequired,
+    TFASetup: PropTypes.func.isRequired,
+    getTFA: PropTypes.func.isRequired,
+    isTFAing: PropTypes.bool
   };
-
+  componentDidMount() {
+    this.props.get();
+  }
   componentDidUpdate(prevProps) {
     const { error, isAuthenticated } = this.props;
     if (error !== prevProps.error) {
@@ -82,10 +91,9 @@ class ResponsiveDialog extends Component {
     this.setState({ [e.target.name]: e.target.value });
   };
 
-  
   render() {
     const { classes, title, alertMsg } = this.props;
-    const { open } = this.state;
+    const { open, hasSetupTFA } = this.state;
     //stop this from getting lost in lambda expressions.
     const that = this;
     const dialog = isFullScreen => {
@@ -102,15 +110,19 @@ class ResponsiveDialog extends Component {
           </DialogContent>
           {title === "Google Two-Factor Auth" ? (
             <DialogActions>
-              <TextField
-                autoFocus
-                variant="outlined"
-                fullWidth
-                label="enter code"
-              />
-              <Button autoFocus onClick={this.onSubmit} color="primary">
-                submit
-              </Button>
+              {hasSetupTFA ? (
+                <div>
+                  <TextField
+                    autoFocus
+                    variant="outlined"
+                    fullWidth
+                    label="enter code"
+                  />
+                  <Button autoFocus onClick={this.onSubmit} color="primary">
+                    submit
+                  </Button>
+                </div>
+              ) : null}
             </DialogActions>
           ) : (
             <DialogActions className={{ justifyContent: "center" }}>
@@ -138,8 +150,11 @@ class ResponsiveDialog extends Component {
 
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
-  error: state.error
+  error: state.error,
+  TFA: state.auth.TFA,
+  isTFAing: state.auth.isTFAing,
+  
 });
-export default connect(mapStateToProps, { twoFAVerify, clearErrors })(
+export default connect(mapStateToProps, { TFAVerify, TFASetup, getTFA, clearErrors })(
   withStyles(styles)(ResponsiveDialog)
 );
