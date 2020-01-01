@@ -3,11 +3,12 @@ export const ADD_ITEM = 'ADD_ITEM';
 export const DELETE_ITEM = 'DELETE_ITEM';
 export const ITEMS_LOADING = 'ITEMS_LOADING';
 
+//USER
+export const USER_LOADING = "USER_LOADING";
+export const ALL_USERS_LOADED = "GET_USERS";
+export const USER_LOADED = "USER_LOADED";
 
 //AUTH
-export const USER_LOADING = "USER_LOADING";
-export const GET_USERS = "GET_USERS";
-export const USER_LOADED = "USER_LOADED";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";

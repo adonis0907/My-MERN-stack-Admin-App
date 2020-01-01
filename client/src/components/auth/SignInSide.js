@@ -19,12 +19,7 @@ import { clearErrors } from "../../actions/errorActions";
 import { loadUser } from "../../actions/authActions";
 
 import ResponsiveDialog from "../ResponsiveDialog";
-import {
-  Route,
-  BrowserRouter as Router,
-  NavLink,
-  withRouter
-} from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import SimpleBackdrop from "../MyBackdrop";
 
 const theme = createMuiTheme({
@@ -77,7 +72,8 @@ class SignInSide extends Component {
     login: PropTypes.func.isRequired,
     userLoaded: PropTypes.bool,
     clearErrors: PropTypes.func.isRequired,
-    isTFAing: PropTypes.bool
+    isTFAing: PropTypes.bool,
+    isAuthenticated: PropTypes.bool
   };
 
   componentDidUpdate(prevProps) {
@@ -111,6 +107,9 @@ class SignInSide extends Component {
       password
     };
 
+    if (this.props.isAuthenticated) {
+      document.location.href = "/";
+    }
     // Attempt to login
     this.props.login(user).then(authPromise => {
       this.props.loadUser();
@@ -121,7 +120,7 @@ class SignInSide extends Component {
 
   render() {
     const { classes, isTFAing, userLoaded, error } = this.props;
-    
+
     return (
       <div>
         {isTFAing ? (
@@ -230,7 +229,8 @@ class SignInSide extends Component {
 const mapStateToProps = state => ({
   error: state.error,
   userLoaded: state.auth.userLoaded,
-  isTFAing: state.auth.isTFAing
+  isTFAing: state.auth.isTFAing,
+  isAuthenticated: state.auth.isAuthenticated
 });
 export default connect(mapStateToProps, { login, clearErrors, loadUser })(
   withStyles(styles)(SignInSide)

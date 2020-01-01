@@ -15,7 +15,7 @@ import {
   TFA_FAIL,
   TFA_SETUP_SUCCESS,
   TFA_LOADED,
-  TFA_ING
+  ALL_USERS_LOADED
 } from "./types";
 
 // Check token & load user
@@ -28,6 +28,27 @@ export const loadUser = () => (dispatch, getState) => {
     .then(res =>
       dispatch({
         type: USER_LOADED,
+        payload: res.data
+      })
+    )
+    .catch(err => {
+      dispatch(returnErrors(err.response.data, err.response.status));
+      dispatch({
+        type: AUTH_ERROR
+      });
+    });
+};
+
+// get all registered users
+export const getAllUsers = () => (dispatch, getState) => {
+  // User loading
+  dispatch({ type: USER_LOADING });
+
+  axios
+    .get("/api/users", tokenConfig(getState))
+    .then(res =>
+      dispatch({
+        type: ALL_USERS_LOADED,
         payload: res.data
       })
     )

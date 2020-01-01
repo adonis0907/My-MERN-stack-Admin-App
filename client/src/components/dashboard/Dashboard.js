@@ -37,6 +37,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import ResponsiveDialog from "../ResponsiveDialog";
 
+import { getAllUsers } from "../../actions/authActions";
 const drawerWidth = 240;
 const theme = createMuiTheme({
   spacing: 4
@@ -126,7 +127,8 @@ class Dashboard extends Component {
     selectedIndex: 0
   };
   static propTypes = {
-    auth: PropTypes.object.isRequired
+    auth: PropTypes.object.isRequired,
+    getAllUsers: PropTypes.func.isRequired
   };
 
   render() {
@@ -232,6 +234,10 @@ class Dashboard extends Component {
                   <Orders />
                 </Paper>
               </Grid> */}
+          <UserMenu />
+
+              {/* all users table */}
+              
             </Grid>
           </Container>
         </main>
@@ -241,7 +247,8 @@ class Dashboard extends Component {
 }
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  allUsers: state.auth
 });
 
-export default connect(mapStateToProps, null)(withStyles(styles)(Dashboard));
+export default connect(mapStateToProps, { getAllUsers })(withStyles(styles)(Dashboard));

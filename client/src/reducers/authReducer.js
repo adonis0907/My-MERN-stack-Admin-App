@@ -12,7 +12,8 @@ import {
   TFA_SUCCESS,
   TFA_SETUP_SUCCESS,
   TFA_LOADED,
-  TFA_ING
+  TFA_ING,
+  ALL_USERS_LOADED
 } from "../actions/types";
 
 const initialState = {
@@ -24,7 +25,8 @@ const initialState = {
   users: null,
   TFA: null,
   TFALoaded: false,
-  isTFAing: false
+  isTFAing: false,
+  allUsers: null
 };
 
 export default function(state = initialState, action) {
@@ -32,18 +34,17 @@ export default function(state = initialState, action) {
     case USER_LOADING:
       return {
         ...state,
-        isLoading: true
+        USER_LOADING: true
       };
-    case GET_USERS:
+    case ALL_USERS_LOADED:
       return {
         ...state,
-        users: action.payload,
-        isLoading: false
+        allUsers: action.payload,
+        USER_LOADING: false
       };
     case USER_LOADED:
       return {
         ...state,
-        isAuthenticated: true,
         isLoading: false,
         userLoaded: true,
         user: action.payload
