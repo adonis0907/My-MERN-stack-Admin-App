@@ -11,7 +11,8 @@ import {
   TFA_FAIL,
   TFA_SUCCESS,
   TFA_SETUP_SUCCESS,
-  TFA_LOADED
+  TFA_LOADED,
+  TFA_ING
 } from "../actions/types";
 
 const initialState = {
@@ -22,8 +23,8 @@ const initialState = {
   user: null,
   users: null,
   TFA: null,
-  isTFAing: false,
-  TFALoaded: false
+  TFALoaded: false,
+  isTFAing: false
 };
 
 export default function(state = initialState, action) {
@@ -60,7 +61,6 @@ export default function(state = initialState, action) {
     case LOGIN_FAIL:
     case LOGOUT_SUCCESS:
     case REGISTER_FAIL:
-    case TFA_FAIL:
       localStorage.removeItem("token");
       return {
         ...state,
@@ -68,8 +68,14 @@ export default function(state = initialState, action) {
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        isTFAing: false,
         userLoaded: false
+      };
+    case TFA_FAIL:
+      return {
+        ...state,
+        TFA: null,
+        isTFAing: false,
+        TFALoaded: false
       };
 
     case TFA_LOADED:
@@ -77,12 +83,13 @@ export default function(state = initialState, action) {
         ...state,
         TFA: action.payload,
         TFALoaded: true,
-        isTFAing: true
+        isTFAing: false
       };
     case TFA_SUCCESS:
       return {
         ...state,
         isAuthenticated: true,
+        TFA: null,
         isTFAing: false
       };
     case TFA_SETUP_SUCCESS:
@@ -91,6 +98,12 @@ export default function(state = initialState, action) {
         TFA: action.payload,
         TFALoaded: true,
         isTFAing: false
+      };
+    case TFA_ING:
+      return {
+        ...state,
+
+        isTFAing: true
       };
     default:
       return state;

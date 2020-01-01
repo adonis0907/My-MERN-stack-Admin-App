@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
+import Box from "@material-ui/core/Box";
+
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
@@ -23,14 +25,23 @@ const theme = createMuiTheme({
   spacing: 4
 });
 
-const styles = {};
+const styles = {
+  centerItems: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "80%",
+    margin: "0"
+  }
+};
 
 class ResponsiveDialog extends Component {
   state = {
     open: true,
     QRCode: "",
     code: "",
-    hasSetupTFA: false
+    domainName: ""
   };
 
   static propTypes = {
@@ -41,17 +52,32 @@ class ResponsiveDialog extends Component {
     TFAVerify: PropTypes.func.isRequired,
     TFASetup: PropTypes.func.isRequired,
     getTFA: PropTypes.func.isRequired,
-    isTFAing: PropTypes.bool,
     TFA: PropTypes.object
   };
   componentDidMount() {
+    const { email, TFA } = this.props;
+    const { domainName } = this.state;
     if (this.props.title === "Google Two-Factor Auth") {
-      this.props.getTFA();
+      const obj = {
+        email,
+        domainName
+      };
+      this.props.getTFA(obj).then(() => {
+        console.log(TFA);
+        console.log(email);
+
+        if (!TFA && email) {
+          this.props.TFASetup(obj).then(() => {
+            this.props.getTFA(obj);
+          });
+        }
+      });
       // this.props.TFASetup();
     }
   }
   componentDidUpdate(prevProps) {
-    const { error, isAuthenticated } = this.props;
+    const { error } = this.props;
+
     if (error !== prevProps.error) {
       // Check for register error
       if (error.id === "LOGIN_FAIL") {
@@ -80,27 +106,25 @@ class ResponsiveDialog extends Component {
     e.preventDefault();
 
     const { code } = this.state;
-
+    const { email } = this.props;
     // Attempt to login
-    // this.props.twoFAVerify(code).then(authPromise => {
-    //   // document.location.href = "/";
-    //   this.setState({
-    //     is2FA: true
-    //   });
-    // });
-
+    this.props.TFAVerify(email, code).then(verificationPromise => {
+      if (verificationPromise) {
+        document.location.href = "/";
+      }
+    });
     //clear errors
     this.toggle();
   };
   onChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    this.setState({ code: e.target.value });
   };
 
   render() {
     const { classes, title, alertMsg, TFA } = this.props;
 
     // get TFA object from props for dispalying qrcode
-    const { open, hasSetupTFA } = this.state;
+    const { open } = this.state;
 
     //stop this from getting lost in lambda expressions.
     const dialog = isFullScreen => {
@@ -114,13 +138,16 @@ class ResponsiveDialog extends Component {
           <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
           <DialogContent>
             <DialogContentText>{alertMsg}</DialogContentText>
-            {TFA ? <img src={TFA.TFA.dataURL} /> : null}
+            {TFA ? (
+              <div className={classes.centerItems}>
+                <img src={TFA.TFA.dataURL} />
+              </div>
+            ) : null}
           </DialogContent>
           {title === "Google Two-Factor Auth" ? (
             <div
               style={{
-                width: "100%",
-                
+                width: "100%"
               }}
             >
               {TFA ? (
@@ -130,8 +157,9 @@ class ResponsiveDialog extends Component {
                     variant="outlined"
                     label="enter code"
                     fullWidth
+                    onChange={this.onChange}
                   />
-                  <Button autoFocus onClick={this.onSubmit} color="primary">
+                  <Button onClick={this.onSubmit} color="primary">
                     submit
                   </Button>
                 </DialogActions>
@@ -165,8 +193,7 @@ class ResponsiveDialog extends Component {
 const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   error: state.error,
-  TFA: state.auth.TFA,
-  isTFAing: state.auth.isTFAing
+  TFA: state.auth.TFA
 });
 export default connect(mapStateToProps, {
   TFAVerify,

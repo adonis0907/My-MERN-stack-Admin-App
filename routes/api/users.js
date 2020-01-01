@@ -22,6 +22,7 @@ router.get("/", auth,  (req, res) => {
 // @access  Public
 router.post("/", (req, res) => {
   const { name, email, password } = req.body;
+  console.log( req.body);
 
   // Simple validation
   if (!name || !email || !password) {

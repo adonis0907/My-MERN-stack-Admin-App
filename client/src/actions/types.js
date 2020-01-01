@@ -25,3 +25,4 @@ export const TFA_SETUP_SUCCESS = 'TFA_SETUP_SUCCESS';
 
 export const TFA_FAIL = 'TFA_FAIL';
 export const TFA_LOADED = 'TFA_LOADED';
+export const TFA_ING = 'TFA_ING';

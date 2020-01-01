@@ -25,6 +25,7 @@ import {
   NavLink,
   withRouter
 } from "react-router-dom";
+import SimpleBackdrop from "../MyBackdrop";
 
 const theme = createMuiTheme({
   spacing: 4
@@ -75,7 +76,8 @@ class SignInSide extends Component {
     error: PropTypes.object.isRequired,
     login: PropTypes.func.isRequired,
     userLoaded: PropTypes.bool,
-    clearErrors: PropTypes.func.isRequired
+    clearErrors: PropTypes.func.isRequired,
+    isTFAing: PropTypes.bool
   };
 
   componentDidUpdate(prevProps) {
@@ -87,10 +89,7 @@ class SignInSide extends Component {
       } else {
         this.setState({ msg: null });
       }
-
-   
     }
- 
   }
 
   toggle = () => {
@@ -113,113 +112,116 @@ class SignInSide extends Component {
     };
 
     // Attempt to login
-    this.props.login(user).then((authPromise) => {
-      if(authPromise) {
-        this.props.loadUser();
-      }
-
-    })
+    this.props.login(user).then(authPromise => {
+      this.props.loadUser();
+    });
     //clear errors
     this.toggle();
   };
 
   render() {
-
-    const { classes } = this.props;
+    const { classes, isTFAing, userLoaded, error } = this.props;
+    
     return (
       <div>
-        {/* if user credentials are correct. Do a google 2fa before login to dashboard */}
-        {console.log(this.props.userLoaded)}
-        {this.props.userLoaded ? (
-          <ResponsiveDialog
-            alertMsg="enter the code from google authenticator to log in."
-            title="Google Two-Factor Auth"
-          />
-        ) : null}
+        {isTFAing ? (
+          <SimpleBackdrop></SimpleBackdrop>
+        ) : (
+          <div>
+            {/* if user credentials are correct. Do a google 2fa before login to dashboard */}
+            {userLoaded ? (
+              <ResponsiveDialog
+                alertMsg="enter the code from google authenticator to log in."
+                title="Google Two-Factor Auth"
+                email={this.state.email}
+              />
+            ) : null}
 
-        <Grid container component="main" className={classes.root}>
-          <CssBaseline />
+            <Grid container component="main" className={classes.root}>
+              <CssBaseline />
 
-          <Grid item xs={false} sm={4} md={7} className={classes.image} />
-          <Grid
-            item
-            xs={12}
-            sm={8}
-            md={5}
-            component={Paper}
-            elevation={6}
-            square
-          >
-            <div className={classes.paper}>
-              <Avatar className={classes.avatar}>
-                <LockOutlinedIcon />
-              </Avatar>
-              <Typography component="h1" variant="h5">
-                Sign in
-              </Typography>
-              {this.state.msg ? (
-                <ResponsiveDialog
-                  alertMsg={this.state.msg}
-                  title={this.props.error.id}
-                />
-              ) : null}
-              
-              <form className={classes.form} noValidate>
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  autoFocus
-                  onChange={this.onChange}
-                />
-                <TextField
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  onChange={this.onChange}
-                />
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  color="primary"
-                  className={classes.submit}
-                  onClick={this.onSubmit}
-                >
-                  Sign In
-                </Button>
+              <Grid item xs={false} sm={4} md={7} className={classes.image} />
+              <Grid
+                item
+                xs={12}
+                sm={8}
+                md={5}
+                component={Paper}
+                elevation={6}
+                square
+              >
+                <div className={classes.paper}>
+                  <Avatar className={classes.avatar}>
+                    <LockOutlinedIcon />
+                  </Avatar>
+                  <Typography component="h1" variant="h5">
+                    Sign in
+                  </Typography>
+                  {this.state.msg ? (
+                    <ResponsiveDialog
+                      alertMsg={this.state.msg}
+                      title={error.id}
+                    />
+                  ) : null}
 
-                <Grid container>
-                  <Grid item xs>
-                    <NavLink to="#" variant="body2">
-                      Forgot password?
-                    </NavLink>
-                  </Grid>
-                  <Grid item>
-                    <NavLink to="./signup" variant="body2">
-                      {"Don't have an account? Sign Up"}
-                    </NavLink>
-                  </Grid>
-                </Grid>
-              </form>
-            </div>
-          </Grid>
-        </Grid>
+                  <form className={classes.form} noValidate>
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      id="email"
+                      label="Email Address"
+                      name="email"
+                      autoComplete="email"
+                      autoFocus
+                      onChange={this.onChange}
+                    />
+                    <TextField
+                      variant="outlined"
+                      margin="normal"
+                      required
+                      fullWidth
+                      name="password"
+                      label="Password"
+                      type="password"
+                      id="password"
+                      autoComplete="current-password"
+                      onChange={this.onChange}
+                    />
+                    <FormControlLabel
+                      control={<Checkbox value="remember" color="primary" />}
+                      label="Remember me"
+                    />
+                    <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      className={classes.submit}
+                      onClick={this.onSubmit}
+                    >
+                      Sign In
+                    </Button>
+
+                    <Grid container>
+                      <Grid item xs>
+                        <NavLink to="#" variant="body2">
+                          Forgot password?
+                        </NavLink>
+                      </Grid>
+                      <Grid item>
+                        <NavLink to="./signup" variant="body2">
+                          {"Don't have an account? Sign Up"}
+                        </NavLink>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </div>
+              </Grid>
+            </Grid>
+          </div>
+        )}
       </div>
     );
   }
@@ -227,7 +229,8 @@ class SignInSide extends Component {
 
 const mapStateToProps = state => ({
   error: state.error,
-  userLoaded: state.auth.userLoaded
+  userLoaded: state.auth.userLoaded,
+  isTFAing: state.auth.isTFAing
 });
 export default connect(mapStateToProps, { login, clearErrors, loadUser })(
   withStyles(styles)(SignInSide)

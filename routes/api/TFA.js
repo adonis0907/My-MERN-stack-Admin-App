@@ -7,33 +7,33 @@ const TFA = require("../../models/TFA");
 
 const auth = require("../../middleware/auth");
 
-
-// @route   GET api/TFA/setup
+// @route   POST api/TFA/setup
 // @desc    Get setup TFA for the user
 // @access  Private
-router.get("/setup", (req, res) => {
-  const email = req.body;
-  TFA.findOne(email).then(TFA => {
-    if (!TFA)
-      return res.status(400).json({ msg: "TFA document Does not exist" });
-    let token = speakeasy.totp({
-      secret: TFA.secret,
-      encoding: "base32"
-    });
-    res.json({
-      TFA
-    });
-  });
+router.post("/", (req, res) => {
+  const { email, domainName } = req.body;
+  TFA.findOne({ email })
+    .then(TFADoc => {
+      if (!TFADoc)
+        return res.status(400).json({ msg: "TFA document Does not exist" });
+      res.json({
+        TFA: TFADoc
+      });
+    })
+    .catch(err => res.status(400).json({ msg: err }));
 });
 
 // @route   POST api/TFA/setup
-// @desc    construct TFA to database for the user
+// @desc    construct TFA setup and save it to db for the user
 // @access  Private
-router.post("/setup", auth, (req, res) => {
+router.post("/setup", (req, res) => {
   const { email, domainName } = req.body;
-  TFA.findOne({ email }).then(TFA => {
-    if (TFA) return res.status(400).json({ msg: "TFA already exists" });
-  });
+  console.log(email);
+  TFA.findOne({ email })
+    .then(TFA => {
+      if (TFA) return res.status(400).json({ msg: "TFA already exists" });
+    })
+    .catch(err => res.status(400).json({ msg: err }));
 
   const secret = speakeasy.generateSecret({
     length: 10,
@@ -66,25 +66,28 @@ router.post("/setup", auth, (req, res) => {
 router.delete("/setup", (req, res) => {
   const email = req.body;
 
-  TFA.findOne(email)
+  TFA.findOne({ email })
     .then(TFA => TFA.remove().then(() => res.json({ success: true })))
     .catch(err => res.status(404).json({ success: false, msg: err }));
 });
-
-
 
 // @route   POST api/TFA/verify
 // @desc    verify TFA.
 // @access  Private
 router.post("/verify", (req, res) => {
-  const { token, email } = req.body;
+  const { email, code } = req.body;
+  var token = speakeasy.totp({
+    secret: TFA.secret,
+    encoding: "base32"
+  });
+  console.log("token: " + token + " || " + "code: " + code);
 
-  TFA.findOne(email)
+  TFA.findOne({ email })
     .then(TFA => {
       let isVerified = speakeasy.totp.verify({
         secret: TFA.secret,
         encoding: "base32",
-        token: token
+        token: code
       });
 
       if (isVerified) {
@@ -93,12 +96,13 @@ router.post("/verify", (req, res) => {
         });
       }
     })
-    .catch(err =>
+    .catch(err => {
+      console.log(err);
+
       res.status(403).json({
-        msg:
-          "Invalid Auth Code, verification failed. Please verify the system Date and Time"
-      })
-    );
+        msg: err
+      });
+    });
 });
 
 module.exports = router;
