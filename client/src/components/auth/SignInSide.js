@@ -16,6 +16,8 @@ import PropTypes from "prop-types";
 
 import { login } from "../../actions/authActions";
 import { clearErrors } from "../../actions/errorActions";
+import { loadUser } from "../../actions/authActions";
+
 import ResponsiveDialog from "../ResponsiveDialog";
 import {
   Route,
@@ -66,18 +68,18 @@ class SignInSide extends Component {
     email: "",
     password: "",
     msg: null,
-    is2FA: false
+    TFAAuth: false
   };
 
   static propTypes = {
-    isAuthenticated: PropTypes.bool,
     error: PropTypes.object.isRequired,
     login: PropTypes.func.isRequired,
+    userLoaded: PropTypes.bool,
     clearErrors: PropTypes.func.isRequired
   };
 
   componentDidUpdate(prevProps) {
-    const { error, isAuthenticated } = this.props;
+    const { error } = this.props;
     if (error !== prevProps.error) {
       // Check for register error
       if (error.id === "LOGIN_FAIL") {
@@ -86,15 +88,9 @@ class SignInSide extends Component {
         this.setState({ msg: null });
       }
 
-      // if (isAuthenticated) {
-      //    document.location.href = "/";
-
-      // }
+   
     }
-
-    // if (isAuthenticated) {
-    //   this.toggle();
-    // }
+ 
   }
 
   toggle = () => {
@@ -117,23 +113,24 @@ class SignInSide extends Component {
     };
 
     // Attempt to login
-    this.props.login(user).then(authPromise => {
-      document.location.href = "/";
-      // this.setState({
-      //   is2FA: true
-      // });
-    });
+    this.props.login(user).then((authPromise) => {
+      if(authPromise) {
+        this.props.loadUser();
+      }
 
+    })
     //clear errors
     this.toggle();
   };
 
   render() {
+
     const { classes } = this.props;
     return (
       <div>
         {/* if user credentials are correct. Do a google 2fa before login to dashboard */}
-        {this.state.is2FA ? (
+        {console.log(this.props.userLoaded)}
+        {this.props.userLoaded ? (
           <ResponsiveDialog
             alertMsg="enter the code from google authenticator to log in."
             title="Google Two-Factor Auth"
@@ -166,6 +163,7 @@ class SignInSide extends Component {
                   title={this.props.error.id}
                 />
               ) : null}
+              
               <form className={classes.form} noValidate>
                 <TextField
                   variant="outlined"
@@ -228,9 +226,9 @@ class SignInSide extends Component {
 }
 
 const mapStateToProps = state => ({
-  isAuthenticated: state.auth.isAuthenticated,
-  error: state.error
+  error: state.error,
+  userLoaded: state.auth.userLoaded
 });
-export default connect(mapStateToProps, { login, clearErrors })(
+export default connect(mapStateToProps, { login, clearErrors, loadUser })(
   withStyles(styles)(SignInSide)
 );

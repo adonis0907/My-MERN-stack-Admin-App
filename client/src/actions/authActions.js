@@ -13,7 +13,8 @@ import {
   REGISTER_FAIL,
   TFA_SUCCESS,
   TFA_FAIL,
-  TFA_SETUP_SUCCESS
+  TFA_SETUP_SUCCESS,
+  TFA_LOADED
 } from "./types";
 
 // Check token & load user
@@ -53,8 +54,7 @@ export const register = ({ name, email, password }) => dispatch => {
       type: REGISTER_SUCCESS,
       payload: res.data
     })
-  );
-  authPromise.catch(err => {
+  ).catch(err => {
     dispatch(
       returnErrors(err.response.data, err.response.status, "REGISTER_FAIL")
     );
@@ -62,6 +62,7 @@ export const register = ({ name, email, password }) => dispatch => {
       type: REGISTER_FAIL
     });
   });
+  
 
   //not sure if it is the right way to do redux.
   return authPromise;
@@ -85,8 +86,7 @@ export const login = ({ email, password }) => dispatch => {
       type: LOGIN_SUCCESS,
       payload: res.data
     })
-  );
-  authPromise.catch(err => {
+  ).catch(err => {
     dispatch(
       returnErrors(err.response.data, err.response.status, "LOGIN_FAIL")
     );
@@ -94,6 +94,7 @@ export const login = ({ email, password }) => dispatch => {
       type: LOGIN_FAIL
     });
   });
+  
 
   //not sure if it is the right way to do redux.
   return authPromise;
@@ -126,7 +127,13 @@ export const tokenConfig = getState => {
   return config;
 };
 
-// google 2fa auth setup.
+
+// --------------------------- google 2fa auth . ---------------------------------------------//
+// --------------------------- google 2fa auth . ---------------------------------------------//
+// --------------------------- google 2fa auth . ---------------------------------------------//
+// --------------------------- google 2fa auth . ---------------------------------------------//
+
+
 export const getTFA = email => dispatch => {
   // Headers
   const config = {
@@ -137,18 +144,14 @@ export const getTFA = email => dispatch => {
 
   // Request body
   const body = JSON.stringify(email);
-  const authPromise = axios.get("/api/TFA/setup", body, config).then(res =>
+  const authPromise = axios.get("/api/TFA/setup", body, config).then(res => {
     dispatch({
-      type: TFA_SETUP_SUCCESS,
+      type: TFA_LOADED,
       payload: res.data
-    })
-  );
-  authPromise.catch(err => {
-    dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
-    dispatch({
-      type: TFA_FAIL
     });
-  });
+  }
+  )
+  
 
   //not sure if it is the right way to do redux.
   return authPromise;
@@ -170,13 +173,15 @@ export const TFASetup = ( email, domainName ) => dispatch => {
       type: TFA_SETUP_SUCCESS,
       payload: res.data
     })
-  );
-  authPromise.catch(err => {
+  ).catch(err => {
     dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
     dispatch({
       type: TFA_FAIL
     });
   });
+  
+
+  
 
   //not sure if it is the right way to do redux.
   return authPromise;
@@ -197,13 +202,13 @@ export const TFAVerify = (token, code) => dispatch => {
     dispatch({
       type: TFA_SUCCESS
     })
-  );
-  authPromise.catch(err => {
+  ).catch(err => {
     dispatch(returnErrors(err.response.data, err.response.status, "TFA_FAIL"));
     dispatch({
       type: TFA_FAIL
     });
   });
+  
 
   //not sure if it is the right way to do redux.
   return authPromise;

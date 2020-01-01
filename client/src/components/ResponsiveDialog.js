@@ -36,14 +36,19 @@ class ResponsiveDialog extends Component {
   static propTypes = {
     isAuthenticated: PropTypes.bool,
     error: PropTypes.object.isRequired,
-    TFAVerify: PropTypes.func.isRequired,
+
     clearErrors: PropTypes.func.isRequired,
+    TFAVerify: PropTypes.func.isRequired,
     TFASetup: PropTypes.func.isRequired,
     getTFA: PropTypes.func.isRequired,
-    isTFAing: PropTypes.bool
+    isTFAing: PropTypes.bool,
+    TFA: PropTypes.object
   };
   componentDidMount() {
-    this.props.get();
+    if (this.props.title === "Google Two-Factor Auth") {
+      this.props.getTFA();
+      // this.props.TFASetup();
+    }
   }
   componentDidUpdate(prevProps) {
     const { error, isAuthenticated } = this.props;
@@ -77,12 +82,12 @@ class ResponsiveDialog extends Component {
     const { code } = this.state;
 
     // Attempt to login
-    this.props.twoFAVerify(code).then(authPromise => {
-      // document.location.href = "/";
-      this.setState({
-        is2FA: true
-      });
-    });
+    // this.props.twoFAVerify(code).then(authPromise => {
+    //   // document.location.href = "/";
+    //   this.setState({
+    //     is2FA: true
+    //   });
+    // });
 
     //clear errors
     this.toggle();
@@ -92,10 +97,12 @@ class ResponsiveDialog extends Component {
   };
 
   render() {
-    const { classes, title, alertMsg } = this.props;
+    const { classes, title, alertMsg, TFA } = this.props;
+
+    // get TFA object from props for dispalying qrcode
     const { open, hasSetupTFA } = this.state;
+
     //stop this from getting lost in lambda expressions.
-    const that = this;
     const dialog = isFullScreen => {
       return (
         <Dialog
@@ -107,25 +114,31 @@ class ResponsiveDialog extends Component {
           <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
           <DialogContent>
             <DialogContentText>{alertMsg}</DialogContentText>
+            {TFA ? <img src={TFA.TFA.dataURL} /> : null}
           </DialogContent>
           {title === "Google Two-Factor Auth" ? (
-            <DialogActions>
-              {hasSetupTFA ? (
-                <div>
+            <div
+              style={{
+                width: "100%",
+                
+              }}
+            >
+              {TFA ? (
+                <DialogActions>
                   <TextField
                     autoFocus
                     variant="outlined"
-                    fullWidth
                     label="enter code"
+                    fullWidth
                   />
                   <Button autoFocus onClick={this.onSubmit} color="primary">
                     submit
                   </Button>
-                </div>
+                </DialogActions>
               ) : null}
-            </DialogActions>
+            </div>
           ) : (
-            <DialogActions className={{ justifyContent: "center" }}>
+            <DialogActions>
               <Button onClick={this.handleClose} color="primary" autoFocus>
                 OK
               </Button>
@@ -134,6 +147,7 @@ class ResponsiveDialog extends Component {
         </Dialog>
       );
     };
+
     return (
       <div>
         <MediaQuery query="(max-device-width: 1224px)">
@@ -152,9 +166,11 @@ const mapStateToProps = state => ({
   isAuthenticated: state.auth.isAuthenticated,
   error: state.error,
   TFA: state.auth.TFA,
-  isTFAing: state.auth.isTFAing,
-  
+  isTFAing: state.auth.isTFAing
 });
-export default connect(mapStateToProps, { TFAVerify, TFASetup, getTFA, clearErrors })(
-  withStyles(styles)(ResponsiveDialog)
-);
+export default connect(mapStateToProps, {
+  TFAVerify,
+  TFASetup,
+  getTFA,
+  clearErrors
+})(withStyles(styles)(ResponsiveDialog));

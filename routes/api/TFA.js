@@ -5,6 +5,7 @@ const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 const TFA = require("../../models/TFA");
 
+const auth = require("../../middleware/auth");
 
 
 // @route   GET api/TFA/setup
@@ -28,7 +29,7 @@ router.get("/setup", (req, res) => {
 // @route   POST api/TFA/setup
 // @desc    construct TFA to database for the user
 // @access  Private
-router.post("/setup", (req, res) => {
+router.post("/setup", auth, (req, res) => {
   const { email, domainName } = req.body;
   TFA.findOne({ email }).then(TFA => {
     if (TFA) return res.status(400).json({ msg: "TFA already exists" });
@@ -45,7 +46,7 @@ router.post("/setup", (req, res) => {
     issuer: "domain name",
     encoding: "base32"
   });
-  QRCode.toDataURL(url, (err, dataURL) => {
+  QRCode.toDataURL(url, auth, (err, dataURL) => {
     const newTFA = new TFA({
       secret: secret.base32,
       dataURL: dataURL,

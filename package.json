@@ -27,7 +27,6 @@
     "mongoose": "^5.8.1",
     "qrcode": "^1.4.4",
     "react-transition-group": "^4.3.0",
-    "reactstrap": "^8.2.0",
     "speakeasy": "^2.0.0",
     "uuid": "^3.3.3"
   },

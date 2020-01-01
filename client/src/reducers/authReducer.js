@@ -10,18 +10,20 @@ import {
   REGISTER_FAIL,
   TFA_FAIL,
   TFA_SUCCESS,
-  TFA_SETUP_SUCCESS
+  TFA_SETUP_SUCCESS,
+  TFA_LOADED
 } from "../actions/types";
 
 const initialState = {
   token: localStorage.getItem("token"),
   isAuthenticated: null,
   isLoading: false,
+  UserLoaded: false,
   user: null,
   users: null,
   TFA: null,
   isTFAing: false,
-
+  TFALoaded: false
 };
 
 export default function(state = initialState, action) {
@@ -31,17 +33,18 @@ export default function(state = initialState, action) {
         ...state,
         isLoading: true
       };
-      case GET_USERS: 
+    case GET_USERS:
       return {
         ...state,
         users: action.payload,
         isLoading: false
-      }
+      };
     case USER_LOADED:
       return {
         ...state,
         isAuthenticated: true,
         isLoading: false,
+        userLoaded: true,
         user: action.payload
       };
     case LOGIN_SUCCESS:
@@ -50,21 +53,9 @@ export default function(state = initialState, action) {
       return {
         ...state,
         ...action.payload,
-        
         isLoading: false
       };
-      case TFA_SUCCESS:
-        return {
-          ...state,
-          isAuthenticated: true,
-          isTFAing: false
-        }
-        case TFA_SETUP_SUCCESS:
-          return {
-            ...state,
-            TFA: action.payload,
-            isTFAing: true
-          }
+
     case AUTH_ERROR:
     case LOGIN_FAIL:
     case LOGOUT_SUCCESS:
@@ -77,6 +68,28 @@ export default function(state = initialState, action) {
         user: null,
         isAuthenticated: false,
         isLoading: false,
+        isTFAing: false,
+        userLoaded: false
+      };
+
+    case TFA_LOADED:
+      return {
+        ...state,
+        TFA: action.payload,
+        TFALoaded: true,
+        isTFAing: true
+      };
+    case TFA_SUCCESS:
+      return {
+        ...state,
+        isAuthenticated: true,
+        isTFAing: false
+      };
+    case TFA_SETUP_SUCCESS:
+      return {
+        ...state,
+        TFA: action.payload,
+        TFALoaded: true,
         isTFAing: false
       };
     default:
