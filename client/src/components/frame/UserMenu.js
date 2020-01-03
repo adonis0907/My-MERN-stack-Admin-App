@@ -39,44 +39,7 @@ import classNames from "classnames";
 import { Badge, Typography, Button } from "../Wrappers/Wrappers";
 import UserAvatar from "../../components/UserAvatar";
 
-// context
-// import {
-//   useLayoutState,
-//   useLayoutDispatch,
-//   toggleSidebar,
-// } from "../../context/LayoutContext";
 import { Logout } from "../auth/Logout";
-// import { useUserDispatch, signOut } from "../../context/UserContext";
-// const StyledMenu = withStyles({
-//   paper: {
-//     border: "1px solid #d3d4d5"
-//   }
-// })(props => (
-//   <Menu
-//     elevation={0}
-//     getContentAnchorEl={null}
-//     anchorOrigin={{
-//       vertical: "bottom",
-//       horizontal: "center"
-//     }}
-//     transformOrigin={{
-//       vertical: "top",
-//       horizontal: "center"
-//     }}
-//     {...props}
-//   />
-// ));
-
-// const StyledMenuItem = withStyles(theme => ({
-//   root: {
-//     "&:focus": {
-//       backgroundColor: theme.palette.primary.main,
-//       "& .MuiListItemIcon-root, & .MuiListItemText-primary": {
-//         color: theme.palette.common.white
-//       }
-//     }
-//   }
-// }))(MenuItem);
 
 import { makeStyles } from "@material-ui/core/styles";
 import { fade } from "@material-ui/core/styles/colorManipulator";
@@ -250,11 +213,6 @@ export default function UserMenu() {
     setAnchorEl(null);
   };
 
-  // global
-  // var layoutState = useLayoutState();
-  // var layoutDispatch = useLayoutDispatch();
-  // var userDispatch = useUserDispatch();
-
   // local
   const [mailMenu, setMailMenu] = useState(null);
   const [isMailsUnread, setIsMailsUnread] = useState(true);
@@ -293,31 +251,31 @@ export default function UserMenu() {
     <div>
       {/* user menu */}
       <IconButton
-          color="inherit"
-          aria-haspopup="true"
-          aria-controls="mail-menu"
-          onClick={e => {
-            setMailMenu(e.currentTarget);
-            setIsMailsUnread(false);
-          }}
-          className={classes.headerMenuButton}
+        color="inherit"
+        aria-haspopup="true"
+        aria-controls="mail-menu"
+        onClick={e => {
+          setMailMenu(e.currentTarget);
+          setIsMailsUnread(false);
+        }}
+        className={classes.headerMenuButton}
+      >
+        <Badge
+          badgeContent={isMailsUnread ? messages.length : null}
+          color="secondary"
         >
-          <Badge
-            badgeContent={isMailsUnread ? messages.length : null}
-            color="secondary"
-          >
-            <MailIcon classes={{ root: classes.headerIcon }} />
-          </Badge>
-        </IconButton>
-        <IconButton
-          aria-haspopup="true"
-          color="inherit"
-          className={classes.headerMenuButton}
-          aria-controls="profile-menu"
-          onClick={e => setProfileMenu(e.currentTarget)}
-        >
-          <AccountIcon classes={{ root: classes.headerIcon }} />
-        </IconButton>
+          <MailIcon classes={{ root: classes.headerIcon }} />
+        </Badge>
+      </IconButton>
+      <IconButton
+        aria-haspopup="true"
+        color="inherit"
+        className={classes.headerMenuButton}
+        aria-controls="profile-menu"
+        onClick={e => setProfileMenu(e.currentTarget)}
+      >
+        <AccountIcon classes={{ root: classes.headerIcon }} />
+      </IconButton>
       <Menu
         id="profile-menu"
         open={Boolean(profileMenu)}
@@ -329,15 +287,23 @@ export default function UserMenu() {
       >
         <div className={classes.profileMenuUser}>
           <Typography variant="h4" weight="medium">
-            John Smith
+            Mark Zhu
           </Typography>
           <Typography
             className={classes.profileMenuLink}
             component="a"
             color="primary"
-            href="https://flatlogic.com"
+            href="https://www.linkedin.com/in/mark-zhu-06b807145/"
           >
-            Flalogic.com
+            https://www.linkedin.com/in/mark-zhu-06b807145/
+          </Typography>
+          <Typography
+            className={classes.profileMenuLink}
+            component="a"
+            color="primary"
+            href="https://github.com/MarkZhuVUW"
+          >
+            https://github.com/MarkZhuVUW/
           </Typography>
         </div>
         <MenuItem
