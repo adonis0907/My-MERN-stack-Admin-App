@@ -7,8 +7,8 @@ import { loadUser } from "./actions/authActions";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
-import Frame from "./components/frame/Frame";
-import { Route, BrowserRouter as Router, Switch } from "react-router-dom";
+import Dashboard from "./components/dashboard/Dashboard";
+import { Route, BrowserRouter as Router } from "react-router-dom";
 import SignInSide from "./components/auth/SignInSide";
 import SignUp from "./components/auth/SignUp";
 import { createMuiTheme } from "@material-ui/core/styles";
@@ -22,11 +22,15 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-          <Switch>
-            <Route exact path="/" component={Frame}></Route>
-            <Route path="/signin" component={SignInSide}></Route>
-            <Route path="/signup" component={SignUp}></Route>
-          </Switch>
+          <Route exact path="/">
+            <Dashboard />
+          </Route>
+          <Route path="/signin">
+            <SignInSide />
+          </Route>
+          <Route path="/signup">
+            <SignUp />
+          </Route>
         </Router>
       </Provider>
     );
