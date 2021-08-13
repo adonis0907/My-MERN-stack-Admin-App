@@ -1,7 +1,7 @@
 <a href="https://mernstackadminapp.herokuapp.com/">Development Server Here</a> <br>
 <a href="null">Production Server will be online soon.</a>
 
-# Note that this project has been inactive for more than 1.5 years.. so if you want to know my current understanding of React, CICD, unit testing ,accessibility handling, design patterns/principles in Java and React, you can check out one of my other open source projects: www.markz-employer-tracker.net.
+# Note that this project has been inactive for more than 1.5 years.. so if you want to know my current understanding of React, CICD, unit testing, accessibility handling, design patterns/principles in Java and React, you can check out one of my other open source projects: www.markz-employer-tracker.net.
 # I have noticed that there is still traffic and clones going on for this project, please dont do that guys it is a shitty starting project used to get my first graduate job only.
 # My MERN stack Admin App
 
